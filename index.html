@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meu Armário Virtual</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;900&family=Syne:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#111;--pink:#de849e;--pink2:#f3b6c7;--soft:#fbe8ee;--card:#fff;--mut:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#16100f;--fg:#f5eef0;--soft:#2a1d22;--card:#201619;--mut:#b9a9ae}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#16100f;--fg:#f5eef0;--soft:#2a1d22;--card:#201619;--mut:#b9a9ae}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Syne,system-ui,sans-serif}
+h1,h2,.logo,.pill{font-family:Unbounded,Impact,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;flex-wrap:wrap;gap:12px}
+.logo{font-weight:900;color:var(--pink);font-size:26px;letter-spacing:1px}
+nav{display:flex;gap:18px;flex-wrap:wrap}
+nav button{background:none;border:0;color:var(--fg);font:600 14px Syne,sans-serif;cursor:pointer;padding:4px 0;border-bottom:2px solid transparent}
+nav button.on{color:var(--pink);border-color:var(--pink)}
+.hero{position:relative;overflow:hidden;padding:30px 0 10px}
+.hero h1{font-weight:900;font-size:clamp(48px,15vw,170px);line-height:.95;margin:0;white-space:nowrap;letter-spacing:-2px;text-align:center}
+.orb{position:absolute;left:50%;top:50%;width:min(34vw,260px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#c9ccd1 30%,#6c7078 55%,#e9eaec 75%,#8b8f97);box-shadow:0 20px 50px #0004;opacity:.95}
+.hero h1 span{position:relative;z-index:2}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--pink);color:#fff;border:0;border-radius:99px;padding:10px 20px;font:600 13px Unbounded,sans-serif;cursor:pointer}
+.btn.alt{background:#fff;color:var(--pink)}.btn.ghost{background:transparent;color:var(--pink);border:1.5px solid var(--pink)}
+.band{background:var(--pink);padding:36px 5vw;color:#fff}
+.band h2{margin:0 0 16px;font-size:clamp(20px,4vw,34px);font-weight:900}
+.pill{display:inline-block;border:1.5px solid #fff8;border-radius:99px;padding:6px 14px;font-size:12px;margin:0 6px 8px 0;cursor:pointer;background:transparent;color:#fff}
+.pill.on{background:#fff;color:var(--pink)}
+section{padding:30px 5vw}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:18px}
+.card{background:var(--card);color:var(--fg);border-radius:70px 70px 24px 24px;padding:14px 12px 12px;text-align:center;position:relative;border:1px solid #0001}
+.band .card{background:#ffffff30;color:#fff;border:0}
+.card .ph{height:150px;background:var(--soft);border-radius:60px 60px 20px 20px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.band .card .ph{background:#ffffff30}
+.card img{max-width:90%;max-height:140px;object-fit:contain}
+.card b{display:block;margin-top:8px;font:600 13px Unbounded,sans-serif}
+.card small{display:block;color:var(--mut);margin:2px 0 8px;font-size:12px}
+.band .card small{color:#fffd}
+.tag{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--pink);color:#fff;border-radius:99px;font:600 10px Unbounded;padding:3px 9px;z-index:2}
+.row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.row .btn{padding:6px 12px;font-size:11px}
+dialog{border:0;border-radius:28px;padding:24px;max-width:520px;width:92vw;background:var(--bg);color:var(--fg)}
+dialog::backdrop{background:#0008}
+label{display:block;font:600 12px Syne;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border-radius:14px;border:1.5px solid var(--pink2);background:var(--card);color:var(--fg);font:14px Syne,sans-serif}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{display:flex;gap:8px;align-items:center}.chk input{width:auto}
+.empty{color:var(--mut);padding:30px;text-align:center;grid-column:1/-1}
+.look{display:grid;grid-template-columns:minmax(260px,440px) 1fr;gap:28px;align-items:start}
+@media(max-width:700px){.look{grid-template-columns:1fr}}
+.stage{background:var(--soft);border-radius:140px 140px 28px 28px;padding:24px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:420px}
+.stage img{max-height:120px;max-width:70%;object-fit:contain}
+.slot{background:var(--card);border:1px solid #0001;border-radius:20px;padding:12px;margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.slot b{font:600 12px Unbounded;min-width:92px}
+.msg{padding:10px 14px;border-radius:14px;margin:6px 0;font-size:14px}
+.warn{background:#ffe3e3;color:#7a1d1d}.ok{background:#e1f6e6;color:#1d5a2c}
+.hint{color:var(--mut);font-size:13px}
+.sw{display:flex;align-items:center;gap:8px;font-size:13px}.sw i{width:26px;height:26px;border-radius:50%;border:1px solid #0003;flex:none}
+.box{background:var(--soft);border-radius:24px;padding:18px 22px;margin-bottom:16px}.box ul{margin:8px 0 0;padding-left:20px;line-height:1.6;font-size:14px}.box b{font-family:Unbounded,sans-serif;font-size:13px}
+.cpb{width:100%;text-align:left;padding:10px 12px;border-radius:14px;border:1.5px solid var(--pink2);background:var(--card);color:var(--fg);font:14px Syne,sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer}
+.cpl{position:absolute;z-index:20;left:0;right:0;max-height:240px;overflow:auto;background:var(--card);border:1.5px solid var(--pink2);border-radius:14px;margin-top:4px}
+.co{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;color:var(--fg);padding:7px 12px;font:13px Syne,sans-serif;cursor:pointer;text-align:left}.co:hover{background:var(--soft)}
+.cg{font:600 11px Unbounded;padding:8px 12px 4px;color:var(--pink)}
+.cv{position:relative;aspect-ratio:3/4;background:var(--soft);border-radius:28px;overflow:hidden;width:100%}.pc{position:absolute}.cv .pc img{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 4px 6px #0003)}
+.dot{width:18px;height:18px;border-radius:50%;border:1px solid #0003;flex:none;display:inline-block}.card .dot{width:12px;height:12px;vertical-align:middle}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">MEU ARMÁRIO</div>
+  <nav id="nav"></nav>
+  <button class="btn" id="add">+ Adicionar peça</button>
+</header>
+
+<div class="hero"><div class="orb"></div><h1><span>seu estilo</span></h1></div>
+
+<div class="band" id="band">
+  <h2 id="ttl">ARMÁRIO</h2>
+  <div id="pills"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<section id="lookSec" hidden>
+  <h2 style="font-weight:900">MONTAR LOOK</h2>
+  <p class="hint">Escolha uma peça em cada espaço. O armário avisa se a combinação funciona.</p>
+  <div class="look"><div id="stage"></div><div><div id="slots"></div>
+  <div class="two"><div><label>Ocasião do look</label><select id="l_occ"></select></div><div><label>Estação do look</label><select id="l_sea"></select></div></div>
+  <div id="msgs" style="margin-top:12px"></div>
+  <div class="row" style="justify-content:flex-start;margin-top:12px"><button class="btn" id="saveLook">Salvar look</button><button class="btn ghost" id="clr">Limpar look</button></div></div></div>
+  <h2 style="font-weight:900;margin-top:44px">LOOKS SALVOS</h2>
+  <div class="row" style="justify-content:flex-start;margin-bottom:14px"><select id="fo" style="width:auto"></select><select id="fs" style="width:auto"></select></div>
+  <div class="grid" id="saved" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
+</section>
+
+<section id="guideSec" hidden></section>
+
+<dialog id="dlg">
+  <h2 style="margin:0;font-weight:900">NOVA PEÇA</h2>
+  <label>Foto da peça (vira PNG)</label>
+  <input type="file" id="f_img" accept="image/*">
+  <div class="chk"><input type="checkbox" id="f_bg" checked><span style="font-size:13px">Remover fundo branco</span></div>
+  <div class="two"><div><label>Categoria</label><select id="f_cat"></select></div><div><label>Nome</label><input id="f_name" placeholder="Ex.: Cropped canelado"></div></div>
+  <div class="two"><div><label>Tamanho</label><input id="f_size" placeholder="P, M, 38…"></div><div><label>Cor</label><div style="position:relative"><button type="button" class="cpb" id="cp_btn"></button><div class="cpl" id="cp_list" hidden></div></div></div></div>
+  <div class="two"><div><label>Estilo</label><select id="f_style"></select></div><div><label>Modelagem (opcional)</label><select id="f_fit"><option value="">—</option><option>Justa</option><option>Regular</option><option>Larga</option></select></div></div>
+  <div class="two"><div id="w_neck"><label>Decote (opcional)</label><select id="f_neck"><option value="">—</option><option>Sem decote</option><option>Com decote</option></select></div><div id="w_len"><label>Comprimento</label><select id="f_len"><option>Curto</option><option>Médio</option><option>Longo</option></select></div></div>
+  <div id="w_sub"><label>Tipo de acessório</label><select id="f_sub"><option>Óculos</option><option>Brinco</option><option>Colar</option><option>Pulseira</option><option>Anel</option><option>Bandana</option><option>Cinto</option><option>Boné</option><option>Meia</option><option>Outro</option></select></div>
+  <div class="two"><div><label>Acabamento</label><select id="f_fin"><option>Liso</option><option>Texturizado</option><option>Brilho</option><option>Estampa</option></select></div><div id="w_metal"><label>Metal</label><select id="f_metal"><option>Dourado</option><option>Prata</option><option>Outro</option></select></div></div>
+  <div style="margin-top:4px"><label>Marca (opcional)</label><select id="f_brand"><option value="">— sem marca —</option><option>SHEIN</option><option>Renner</option><option>Riachuelo</option><option>C&amp;A</option></select></div>
+  <div id="w_shein" hidden><label>ID do item na SHEIN</label><input id="f_id" placeholder="Ex.: 12345678"><label>Link de afiliado</label><input id="f_link" placeholder="https://…"></div>
+  <label>Observações</label><textarea id="f_notes" rows="2"></textarea>
+  <div class="row" style="margin-top:16px"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn" id="save">Salvar</button></div>
+</dialog>
+
+<script>
+const CATS=["Blusas","Calças","Saias","Shorts","Jaquetas","Vestidos","Blusão","Sapatos","Acessórios"];
+const STYLES=["Casual","Trabalho","Festa","Esportivo","Chic","Streetwear","Boho","Y2K","Clássico","Minimalista"];
+const PAL={"Pretos, brancos e neutros":[["Preto","#000000","preto","escuro"],["Branco óptico","#ffffff","branco","claro"],["Cinza carvão","#36454f","cinza","escuro"],["Cinza chumbo","#5a5f66","cinza","escuro"],["Cinza aço","#8a939c","cinza","médio"],["Grafite","#41464b","cinza","escuro"],["Azul-marinho","#0b1f4b","azul","escuro"]],
+"Vermelhos, vinhos e rosas":[["Vermelho cereja","#b0102f","vermelho","escuro"],["Vermelho rubi","#9b111e","vermelho","escuro"],["Bordô","#5c0a1e","vermelho","escuro"],["Vinho","#6d1230","vermelho","escuro"],["Cereja escuro","#6b0f1a","vermelho","escuro"],["Framboesa","#c2185b","rosa","médio"],["Pink intenso","#e6007e","rosa","médio"],["Magenta","#c4007a","rosa","médio"],["Fúcsia","#d5126f","rosa","médio"],["Rosa frio","#f1a7c4","rosa","claro"],["Rosa malva frio","#b57a96","rosa","médio"],["Amora","#5a1a40","roxo","escuro"]],
+"Azuis":[["Azul-real","#1f3fbf","azul","médio"],["Azul cobalto","#0047ab","azul","médio"],["Azul safira","#0f3a8a","azul","escuro"],["Azul elétrico","#0066ff","azul","médio"],["Azul petróleo frio","#0b4d5c","azul","escuro"],["Azul gelo","#cfe6f7","azul","claro"],["Azul noite","#101a3a","azul","escuro"],["Azul pavão","#005f73","azul","escuro"],["Índigo","#2a2a7a","azul","escuro"],["Azul ardósia","#4a5d73","azul","médio"],["Turquesa fria","#10b5b0","azul","médio"]],
+"Verdes":[["Verde esmeralda","#0b8a5a","verde","médio"],["Verde pinheiro","#0d4a3a","verde","escuro"],["Verde garrafa","#0b3d2e","verde","escuro"],["Verde jade frio","#2a9d8f","verde","médio"],["Verde teal","#00796b","verde","médio"],["Verde azulado","#127a7a","verde","médio"],["Verde-azulado escuro","#0a4a4a","verde","escuro"],["Verde menta fria","#b8f0dc","verde","claro"]],
+"Roxos e violetas":[["Violeta","#6a1fc2","roxo","médio"],["Roxo profundo","#3b0a5c","roxo","escuro"],["Ameixa","#5b1a4a","roxo","escuro"],["Berinjela","#3a1a3f","roxo","escuro"],["Uva","#5a2a7a","roxo","escuro"],["Orquídea intensa","#b04fc0","roxo","médio"],["Lilás frio","#c8b4ec","roxo","claro"],["Índigo violeta","#3d2a8a","roxo","escuro"]],
+"Amarelos frios e metálicos":[["Amarelo-limão frio","#e8f04a","amarelo","claro"],["Amarelo ácido","#d6e800","amarelo","claro"],["Champanhe frio","#f0e6d6","neutro","claro"],["Prata brilhante","#d8d8e0","metal","claro"],["Prata envelhecida","#9a9aa2","metal","médio"],["Dourado claro","#d9bf77","metal","claro"],["Dourado branco","#e6d9a8","metal","claro"],["Ouro rosé frio","#d8a7a0","metal","claro"]]};
+const EXTRA=[["Jeans claro","#8fb0d6","jeans","claro"],["Jeans escuro","#2b3a5a","jeans","escuro"],["Outra cor","#999999","outra","médio"]];
+const OUT=[["Bege","#d9c3a0","neutro","claro"],["Creme / off-white quente","#f3ead3","neutro","claro"],["Camel","#b98a52","marrom","médio"],["Marrom","#6b4423","marrom","escuro"],["Mostarda","#d4a017","amarelo","médio"],["Laranja","#f26b1d","laranja","médio"],["Coral","#ff6f61","laranja","médio"],["Pêssego","#ffcba4","laranja","claro"],["Verde oliva","#6b6b2a","verde","escuro"],["Pastel empoeirado","#c9b8b8","neutro","claro"],["Cobre / bronze","#b0643a","metal","médio"]];
+const COLORS=[...Object.values(PAL).flat().map(c=>[...c,1]),...EXTRA.map(c=>[...c,2]),...OUT.map(c=>[...c,0])];
+const CM=Object.fromEntries(COLORS.map(c=>[c[0],c]));
+const CI=i=>CM[i.color]||["","#999","outra","médio",2];
+const SLOTS=[["Casaco",["Jaquetas","Blusão"]],["Blusa",["Blusas"]],["Vestido",["Vestidos"]],["Parte de baixo",["Calças","Saias","Shorts"]],["Sapato",["Sapatos"]],["Acessório",["Acessórios"]]];
+const ORDER=["Acessórios","Casaco","Blusa","Vestido","Parte de baixo","Sapato"];
+let items=[],tab="Armário",cat="Todas",look={},db;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* storage: IndexedDB com fallback em memória */
+function openDB(){return new Promise(r=>{try{const q=indexedDB.open("armario",1);q.onupgradeneeded=()=>q.result.createObjectStore("kv");q.onsuccess=()=>{db=q.result;r()};q.onerror=()=>r()}catch(e){r()}})}
+function load(){return new Promise(r=>{if(!db)return r();try{const q=db.transaction("kv").objectStore("kv").get("items");q.onsuccess=()=>{items=q.result||[];r()};q.onerror=()=>r()}catch(e){r()}})}
+function persist(){try{if(db)db.transaction("kv","readwrite").objectStore("kv").put(items,"items")}catch(e){}}
+
+/* nav */
+const TABS=["Armário","Montar look","SHEIN afiliado","Meu guia"];
+function renderNav(){$("nav").innerHTML=TABS.map(t=>`<button class="${t===tab?"on":""}" data-t="${t}">${t}</button>`).join("");
+ $("nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;cat="Todas";render()})}
+function render(){renderNav();const isLook=tab==="Montar look",g=tab==="Meu guia";$("band").hidden=isLook||g;$("lookSec").hidden=!isLook;$("guideSec").hidden=!g;
+ if(g)renderGuide();else if(isLook)renderLook();else renderCloset()}
+
+/* armário */
+function renderCloset(){
+ $("ttl").textContent=tab==="SHEIN afiliado"?"SHEIN AFILIADO":"ARMÁRIO";
+ $("pills").innerHTML=["Todas",...CATS].map(c=>`<button class="pill ${c===cat?"on":""}" data-c="${c}">${c}</button>`).join("");
+ $("pills").querySelectorAll("button").forEach(b=>b.onclick=()=>{cat=b.dataset.c;renderCloset()});
+ let list=items.filter(i=>(cat==="Todas"||i.cat===cat)&&(tab!=="SHEIN afiliado"||i.shein));
+ $("grid").innerHTML=list.length?list.map(card).join(""):`<div class="empty">Nada por aqui ainda. Clique em “+ Adicionar peça”.</div>`;
+ $("grid").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(confirm("Excluir esta peça?")){items=items.filter(i=>i.id!==b.dataset.del);persist();renderCloset()}});
+ $("grid").querySelectorAll("[data-use]").forEach(b=>b.onclick=()=>{const it=items.find(i=>i.id===b.dataset.use);if(it.cat==="Acessórios"){look.acc=look.acc||[];const e=look.acc.indexOf("");if(e>=0)look.acc[e]=it.id;else look.acc.push(it.id)}else{const s=SLOTS.find(s=>s[1].includes(it.cat))[0];look[s]=it.id}tab="Montar look";render()});
+}
+function card(i){
+ const link=i.shein?(i.link||("https://br.shein.com/pdsearch/"+encodeURIComponent(i.sid||""))):"";
+ return `<div class="card">${i.shein?'<span class="tag">SHEIN</span>':""}<div class="ph"><img src="${i.img}" alt=""></div>
+ <b>${esc(i.name||i.cat)}</b><small>${esc(i.cat)} · ${esc(i.size)} · ${dot(CI(i))} ${esc(i.color)}${i.brand?" · "+esc(i.brand):""}<br>${esc(i.style)}${i.fit?" · "+esc(i.fit):""}${i.neck?" · "+esc(i.neck):""}${i.fin&&i.fin!=="Liso"?" · "+esc(i.fin):""}${i.sub?" · "+esc(i.sub):""}${i.metal?" · "+esc(i.metal):""}${CI(i)[4]===0?"<br>⚠ fora da paleta":""}${i.sid?`<br>ID ${esc(i.sid)}`:""}</small>
+ <div class="row"><button class="btn alt" data-use="${i.id}">Usar</button>${i.shein?`<a class="btn alt" href="${esc(link)}" target="_blank" rel="noopener" style="text-decoration:none">Ver</a>`:""}<button class="btn alt" data-del="${i.id}">✕</button></div></div>`}
+
+/* montar look */
+function renderLook(){
+ $("slots").innerHTML=SLOTS.map(([s,cs])=>{const opts=items.filter(i=>cs.includes(i.cat));
+  return `<div class="slot"><b>${s}</b><select data-s="${s}"><option value="">— nenhum —</option>${opts.map(o=>`<option value="${o.id}" ${look[s]===o.id?"selected":""}>${esc(o.name||o.cat)} (${esc(o.color)})</option>`).join("")}</select></div>`}).join("");
+ $("slots").querySelectorAll("select").forEach(s=>s.onchange=()=>{look[s.dataset.s]=s.value;renderLook()});
+ const get=s=>items.find(i=>i.id===look[s]);
+ $("stage").innerHTML=ORDER.map(s=>get(s)?`<img src="${get(s).img}" alt="">`:"").join("")||`<span class="hint" style="margin:auto">Seu look aparece aqui</span>`;
+ $("msgs").innerHTML=check2(get("Casaco"),get("Blusa"),get("Vestido"),get("Parte de baixo"),get("Acessório")).map(m=>`<div class="msg ${m[0]}">${m[1]}</div>`).join("");
+}
+/* regras de combinação (fáceis de editar/ampliar) */
+function check(jacket,top,dress,bottom){
+ const m=[];
+ if(top&&bottom){
+  if(top.fit==="Justa"&&bottom.cat==="Calças"&&bottom.fit==="Justa")m.push(["warn","Blusa justa pede calça larga. Tente uma calça mais solta."]);
+  if(top.fit==="Justa"&&bottom.cat==="Calças"&&bottom.fit==="Larga")m.push(["ok","Blusa justa + calça larga: equilíbrio perfeito."]);
+  if((bottom.cat==="Shorts"||bottom.len==="Curto")&&top.neck==="Com decote")m.push(["warn","Parte de baixo curta exige top sem decote. Troque a blusa ou use algo mais longo."]);
+  if(top.neck==="Com decote"&&(bottom.len==="Longo"||bottom.len==="Médio"))m.push(["ok","Blusa com decote + parte de baixo longa: combinação certa."]);
+  if((bottom.cat==="Shorts"||bottom.len==="Curto")&&top.neck==="Sem decote")m.push(["ok","Short/curto com top sem decote: combinação certa."]);
+ }
+ if(dress&&(top||bottom))m.push(["warn","Vestido já é um look completo. Remova a blusa ou a parte de baixo."]);
+ if(!m.length)m.push(["ok","Escolha blusa e parte de baixo para ver as dicas."]);
+ return m;
+}
+/* regras de cor, acabamento, paleta e corpo ampulheta */
+function check2(jk,top,dr,bt,ac){
+ const m=check(jk,top,dr,bt).filter(x=>!x[1].startsWith("Escolha"));
+ const name=p=>esc(p.name||p.cat);
+ [jk,top,dr].filter(Boolean).forEach(p=>{if(CI(p)[4]===0)m.push(["warn",`${name(p)} (${esc(p.color)}) está fora do Inverno Profundo e fica perto do rosto. Prefira cores frias e intensas.`])});
+ const all=[jk,top,dr,bt].filter(Boolean);
+ if(all.filter(p=>["Brilho","Texturizado","Textura"].includes(p.fin)).length>1)m.push(["warn","Duas peças com brilho ou textura juntas: deixe a outra parte lisa."]);
+ if(top&&bt){
+  const a=CI(top),b=CI(bt);
+  if(a[2]===b[2]&&!/preto|branco|jeans|outra/.test(a[2]))m.push(["ok","Cores iguais: tom sobre tom combina."]);
+  if(a[2]==="preto"){const good=b[2]==="jeans"||b[3]==="escuro";m.push(good?["ok","Blusa preta com jeans ou parte de baixo escura: combinação certa."]:["warn","Blusa preta pede jeans, calça, short ou saia escuros."])}
+  if(a[2]==="branco"){const good=b[2]==="jeans"||b[3]==="claro";m.push(good?["ok","Blusa branca com jeans ou parte de baixo clara: combinação certa."]:["warn","Blusa branca pede jeans, calça, short ou saia claros."])}
+  if(top.fit==="Larga"&&bt.fit==="Larga")m.push(["warn","Tudo largo esconde a cintura (corpo ampulheta). Marque a cintura com cinto ou use uma peça justa."]);
+ }
+ if(ac&&ac.metal==="Dourado")m.push(["ok","Dourado funciona bem. Prefira dourado claro, branco ou rosé frio, nada muito amarelado."]);
+ if(ac&&ac.metal==="Prata")m.push(["ok","Prata é o metal mais harmônico com o Inverno Profundo."]);
+ if(ac&&ac.metal==="Outro")m.push(["warn","Cobre e bronze alaranjado competem com a paleta. Prefira prata ou dourado claro."]);
+ if(!m.length)m.push(["ok","Escolha blusa e parte de baixo para ver as dicas."]);
+ return m;
+}
+$("clr").onclick=()=>{look={};renderLook()};
+
+function glasses(){
+ const L={"Oval":'<ellipse cx="55" cy="40" rx="40" ry="26"/>',"Gatinho suave":'<path d="M12 24 Q40 22 86 30 Q96 44 80 56 Q56 66 30 56 Q10 48 12 24Z"/>',"Redondo suave":'<circle cx="55" cy="40" r="29"/>',"Browline":'<path d="M16 34 Q16 20 34 20 L78 20 Q94 20 94 34 L94 46 Q94 62 74 62 L36 62 Q16 62 16 46Z" fill="none"/><path d="M16 34 Q16 20 34 20 L78 20 Q94 20 94 34Z" fill="currentColor"/>',"Sem aro":'<ellipse cx="55" cy="40" rx="38" ry="25" stroke-dasharray="3 4" opacity=".7"/>',"Evite: quadrado":'<rect x="16" y="22" width="78" height="36" rx="2"/>'};
+ return Object.entries(L).map(([n,s])=>`<div style="text-align:center"><svg viewBox="0 0 200 80" width="170" style="max-width:100%" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" color="${n.startsWith("Evite")?"#c0392b":"#de849e"}"><g>${s}</g><g transform="translate(200,0) scale(-1,1)">${s}</g><path d="M94 36 Q100 31 106 36" stroke-width="3"/></svg><div class="hint">${n}</div></div>`).join("");
+}
+/* guia pessoal */
+function renderGuide(){
+ const sw=c=>`<span class="sw"><i style="background:${c[1]}"></i>${c[0]}</span>`;
+ const li=a=>"<ul>"+a.map(x=>`<li>${x}</li>`).join("")+"</ul>";
+ const pal=Object.entries(PAL).map(([g,cs])=>`<div class="box"><b>${g}</b><div class="grid" style="margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px">${cs.map(sw).join("")}</div></div>`).join("");
+ $("guideSec").innerHTML=`<h2 style="font-weight:900">MEU GUIA</h2>
+ <div class="box"><b>Minhas medidas</b>${li(["Altura: 1,70 m","Busto: 88 cm","Cintura: 68 cm","Quadril: 103 cm"])}</div>
+ <h2 style="font-weight:900;font-size:20px">MINHA PALETA: INVERNO PROFUNDO</h2>${pal}
+ <div class="box"><b>Evite perto do rosto</b><div class="grid" style="margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px">${[["Bege amarelado","#d9c3a0"],["Creme / off-white quente","#f3ead3"],["Caramelo / camel","#b98a52"],["Marrom alaranjado","#a0592b"],["Mostarda","#d4a017"],["Amarelo queimado","#c98a0a"],["Laranja","#f26b1d"],["Coral alaranjado","#ff6f61"],["Pêssego quente","#ffcba4"],["Verde oliva amarelado","#6b6b2a"],["Pastel empoeirado","#c9b8b8"],["Dourado muito amarelo","#e0b400"],["Cobre / bronze alaranjado","#b0643a"]].map(sw).join("")}</div><p class="hint">Não são proibidas, mas competem com a harmonia da paleta. Perto do rosto o efeito é maior.</p></div>
+ <div class="box"><b>Acessórios</b>${li(["Prata é o metal mais harmônico","Dourado também funciona e é o seu preferido: escolha dourado claro, dourado branco ou ouro rosé frio","Evite dourado muito amarelado, cobre e bronze"])}</div>
+ <div class="box"><b>Óculos para rosto diamante</b>${li(["Formatos que costumam valorizar: oval, gatinho suave, redondo suave e aro com detalhe na parte de cima (browline)","Armações sem aro ou semi-aro suavizam as maçãs do rosto","Evite armações estreitas (mais estreitas que as maçãs do rosto) e muito quadradas ou angulares","Cores de armação na paleta: preto, grafite, azul-marinho, bordô, vinho, prata ou dourado claro"])}<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px">${glasses()}</div><p class="hint">Ilustrações simplificadas dos formatos.</p></div>
+ <div class="box"><b>Estilos para corpo ampulheta</b>${li(["Marque a cintura: vestidos transpassados (envelope), cintos, peplum e blusas para dentro da calça ou saia","Cintura alta em calças (reta ou pantalona), saias lápis e evasê","Peças ajustadas ou com caimento fluido que acompanham a curva","Decote V, canoa ou redondo equilibram ombros e quadril","Evite peças retas e largas em cima e embaixo ao mesmo tempo, e cintura muito baixa"])}</div>
+ `;
+}
+
+/* looks: composição, regras, salvos (estas funções substituem as anteriores) */
+const OCC=["Casual","Trabalho","Festa","Esportivo","Passeio","Jantar"],SEA=["Verão","Primavera","Outono","Inverno"];
+let looks=[];
+function persistLooks(){try{if(db)db.transaction("kv","readwrite").objectStore("kv").put(looks,"looks")}catch(e){}}
+function load(){return new Promise(r=>{if(!db)return r();try{const st=db.transaction("kv").objectStore("kv"),a=st.get("items"),b=st.get("looks");let n=0;const done=()=>{if(++n===2)r()};a.onsuccess=()=>{items=a.result||[];done()};b.onsuccess=()=>{looks=b.result||[];done()};a.onerror=b.onerror=()=>r()}catch(e){r()}})}
+const lk=it=>it.cat==="Calças"?"calça":it.len==="Longo"?"longo":it.len==="Curto"?"curto":"medio";
+function compose(l){
+ const g=k=>items.find(i=>i.id===l[k]);
+ const jk=g("Casaco"),top=g("Blusa"),dr=g("Vestido"),bt=g("Parte de baixo"),sh=g("Sapato");
+ const accs=(l.acc||[]).map(id=>items.find(i=>i.id===id)).filter(Boolean);
+ const J=!!jk,P=[];
+ const add=(it,x,y,w,h,z)=>P.push(`<div class="pc" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;z-index:${z}"><img src="${it.img}" alt=""></div>`);
+ let box=null;
+ if(J)add(jk,34,8,64,60,1);
+ if(dr){const h=(J?{curto:30,medio:40,longo:58}:{curto:34,medio:46,longo:70})[lk(dr)],x=J?3:22,w=J?40:56;add(dr,x,12,w,h,5);box=[x,12,w,h]}
+ else{
+  if(top)add(top,J?2:25,12,J?42:50,28,6);
+  if(bt){const h=(J?{"calça":46,curto:18,medio:26,longo:42}:{"calça":48,curto:20,medio:30,longo:48})[lk(bt)],x=J?5:27,w=J?36:46;add(bt,x,36,w,h,3);box=[x,36,w,h]}
+ }
+ const m=dr||bt;
+ if(sh){if(m&&["curto","medio"].includes(lk(m)))add(sh,box[0]+box[2]*.15,box[1]+box[3]+1,box[2]*.7,J?16:18,4);else add(sh,J?52:30,J?72:85,J?42:40,J?24:14,4)}
+ const cx=(J?2:25)+(J?42:50)/2,cnt={};let s=0;
+ accs.forEach(a=>{const t=a.sub||"Outro",n=cnt[t]||0;cnt[t]=n+1;
+  if(t==="Brinco")add(a,cx-9+n*10,1,18,10,9);
+  else if(t==="Colar")add(a,cx-12,14+n*5,24,13,9);
+  else if(t==="Cinto"&&box)add(a,box[0]+box[2]*.05,box[1]+(dr?box[3]*.38:5),box[2]*.9,8,7);
+  else{const right=J||s%2===0,y=12+(J?s:Math.floor(s/2))*(J?13:15);add(a,right?78:2,y,20,12,8);s++}
+ });
+ return `<div class="cv">${P.join("")||'<span class="hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">Seu look aparece aqui</span>'}</div>`;
+}
+function check(jk,top,dr,bt){
+ const m=[];
+ if(top&&bt){
+  const curto=bt.len==="Curto"||(bt.cat==="Shorts"&&!bt.len),longo=bt.cat==="Calças"||bt.len==="Longo"||bt.len==="Médio";
+  if(top.fit==="Justa"&&bt.cat==="Calças"&&bt.fit==="Justa")m.push(["warn","Blusa justa pede calça larga. Tente uma calça mais solta."]);
+  if(top.fit==="Justa"&&bt.cat==="Calças"&&bt.fit==="Larga")m.push(["ok","Blusa justa + calça larga: equilíbrio perfeito."]);
+  if(curto&&top.neck==="Com decote")m.push(["warn","Parte de baixo curta exige top sem decote. Troque a blusa ou use algo mais longo."]);
+  if(top.neck==="Com decote"&&longo)m.push(["ok","Blusa com decote + parte de baixo longa: combinação certa."]);
+  if(curto&&top.neck==="Sem decote")m.push(["ok","Parte de baixo curta com top sem decote: combinação certa."]);
+ }
+ if(dr&&(top||bt))m.push(["warn","Vestido já é um look completo. Remova a blusa ou a parte de baixo."]);
+ return m;
+}
+function check2(jk,top,dr,bt,accs){
+ const m=check(jk,top,dr,bt),name=p=>esc(p.name||p.cat);
+ [jk,top,dr].filter(Boolean).forEach(p=>{if(CI(p)[4]===0)m.push(["warn",`${name(p)} (${esc(p.color)}) está fora do Inverno Profundo e fica perto do rosto. Prefira cores frias e intensas.`])});
+ const all=[jk,top,dr,bt].filter(Boolean);
+ if(all.filter(p=>["Brilho","Texturizado","Textura"].includes(p.fin)).length>1)m.push(["warn","Duas peças com brilho ou textura juntas: deixe a outra parte lisa."]);
+ if(top&&bt){
+  const a=CI(top),b=CI(bt);
+  if(a[2]===b[2]&&!/preto|branco|jeans|outra/.test(a[2]))m.push(["ok","Cores iguais: tom sobre tom combina."]);
+  if(a[2]==="preto"){const good=b[2]==="jeans"||b[3]==="escuro";m.push(good?["ok","Blusa preta com jeans ou parte de baixo escura: combinação certa."]:["warn","Blusa preta pede jeans, calça, short ou saia escuros."])}
+  if(a[2]==="branco"){const good=b[2]==="jeans"||b[3]==="claro";m.push(good?["ok","Blusa branca com jeans ou parte de baixo clara: combinação certa."]:["warn","Blusa branca pede jeans, calça, short ou saia claros."])}
+  if(top.fit==="Larga"&&bt.fit==="Larga")m.push(["warn","Tudo largo esconde a cintura (corpo ampulheta). Marque a cintura com cinto ou use uma peça justa."]);
+ }
+ const mt=[...new Set(accs.map(a=>a.metal).filter(Boolean))];
+ if(mt.includes("Dourado"))m.push(["ok","Dourado funciona bem. Prefira dourado claro, branco ou rosé frio, nada muito amarelado."]);
+ if(mt.includes("Prata"))m.push(["ok","Prata é o metal mais harmônico com o Inverno Profundo."]);
+ if(mt.includes("Outro"))m.push(["warn","Cobre e bronze alaranjado competem com a paleta. Prefira prata ou dourado claro."]);
+ if(!m.length)m.push(["ok","Escolha blusa e parte de baixo para ver as dicas."]);
+ return m;
+}
+function renderLook(){
+ look.acc=look.acc||[""];
+ const lab=o=>`${o.sub?o.sub+" · ":""}${esc(o.name||o.cat)} (${esc(o.color)})`;
+ const sel=(attr,cs,cur)=>`<select ${attr}><option value="">— nenhum —</option>${items.filter(i=>cs.includes(i.cat)).map(o=>`<option value="${o.id}" ${cur===o.id?"selected":""}>${lab(o)}</option>`).join("")}</select>`;
+ $("slots").innerHTML=SLOTS.filter(s=>s[0]!=="Acessório").map(([s,cs])=>`<div class="slot"><b>${s}</b>${sel(`data-s="${s}"`,cs,look[s])}</div>`).join("")+look.acc.map((v,k)=>`<div class="slot"><b>Acessório ${k+1}</b>${sel(`data-a="${k}"`,["Acessórios"],v)}</div>`).join("")+`<button class="btn ghost" id="addAcc" style="margin-bottom:12px">+ Adicionar acessório</button>`;
+ $("slots").querySelectorAll("select").forEach(s=>s.onchange=()=>{if(s.dataset.a!==undefined)look.acc[+s.dataset.a]=s.value;else look[s.dataset.s]=s.value;renderLook()});
+ $("addAcc").onclick=()=>{look.acc.push("");renderLook()};
+ $("l_occ").value=look.occ||"";$("l_sea").value=look.sea||"";
+ const get=s=>items.find(i=>i.id===look[s]);
+ $("stage").innerHTML=compose(look);
+ $("msgs").innerHTML=check2(get("Casaco"),get("Blusa"),get("Vestido"),get("Parte de baixo"),look.acc.map(id=>items.find(i=>i.id===id)).filter(Boolean)).map(m=>`<div class="msg ${m[0]}">${m[1]}</div>`).join("");
+ renderSaved();
+}
+function renderSaved(){
+ const o=$("fo").value,s=$("fs").value;
+ const list=looks.filter(x=>(!o||x.occ===o)&&(!s||x.sea===s));
+ $("saved").innerHTML=list.length?list.map(x=>`<div class="card" style="border-radius:28px">${compose(x.l)}<b>${esc(x.occ||"Sem ocasião")} · ${esc(x.sea||"Sem estação")}</b><div class="row" style="margin-top:8px"><button class="btn alt" data-open="${x.id}">Abrir</button><button class="btn alt" data-ldel="${x.id}">✕</button></div></div>`).join(""):`<div class="empty">Nenhum look salvo${looks.length?" com esses filtros":" ainda"}.</div>`;
+ $("saved").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{look=JSON.parse(JSON.stringify(looks.find(x=>x.id===b.dataset.open).l));renderLook();$("lookSec").scrollIntoView()});
+ $("saved").querySelectorAll("[data-ldel]").forEach(b=>b.onclick=()=>{if(confirm("Excluir este look salvo?")){looks=looks.filter(x=>x.id!==b.dataset.ldel);persistLooks();renderSaved()}});
+}
+$("l_occ").innerHTML='<option value="">— escolha —</option>'+OCC.map(o=>`<option>${o}</option>`).join("");
+$("l_sea").innerHTML='<option value="">— escolha —</option>'+SEA.map(o=>`<option>${o}</option>`).join("");
+$("fo").innerHTML='<option value="">Todas as ocasiões</option>'+OCC.map(o=>`<option>${o}</option>`).join("");
+$("fs").innerHTML='<option value="">Todas as estações</option>'+SEA.map(o=>`<option>${o}</option>`).join("");
+$("fo").onchange=$("fs").onchange=renderSaved;
+$("l_occ").onchange=()=>{look.occ=$("l_occ").value};
+$("l_sea").onchange=()=>{look.sea=$("l_sea").value};
+$("saveLook").onclick=()=>{
+ const ids=["Casaco","Blusa","Vestido","Parte de baixo","Sapato"].map(k=>look[k]).concat(look.acc||[]).filter(Boolean);
+ if(!ids.length){alert("Monte o look antes de salvar.");return}
+ looks.unshift({id:"l"+Date.now(),l:JSON.parse(JSON.stringify(look)),occ:look.occ||"",sea:look.sea||""});
+ persistLooks();renderSaved();
+ $("saveLook").textContent="Salvo ✓";setTimeout(()=>$("saveLook").textContent="Salvar look",1500);
+};
+
+/* formulário */
+$("f_cat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
+$("f_style").innerHTML=STYLES.map(c=>`<option>${c}</option>`).join("");
+let selColor="Preto";
+const dot=c=>`<i class="dot" style="background:${c[1]}"></i>`;
+function setColor(n){selColor=n;$("cp_btn").innerHTML=dot(CM[n])+n+" ▾"}
+const grp=(t,a)=>`<div class="cg">${t}</div>`+a.map(c=>`<button type="button" class="co" data-n="${c[0]}">${dot(c)}${c[0]}</button>`).join("");
+$("cp_list").innerHTML=Object.entries(PAL).map(([g,cs])=>grp("Paleta: "+g,cs)).join("")+grp("Neutros",EXTRA)+grp("Fora da paleta",OUT);
+$("cp_btn").onclick=()=>{$("cp_list").hidden=!$("cp_list").hidden};
+$("cp_list").onclick=e=>{const b=e.target.closest(".co");if(b){setColor(b.dataset.n);$("cp_list").hidden=true}};
+setColor("Preto");
+function toggles(){const c=$("f_cat").value;$("w_neck").hidden=!["Blusas","Vestidos","Blusão"].includes(c);$("w_len").hidden=!["Saias","Shorts","Vestidos"].includes(c);$("w_shein").hidden=$("f_brand").value!=="SHEIN";$("w_metal").hidden=$("w_sub").hidden=c!=="Acessórios"}
+$("f_cat").onchange=$("f_brand").onchange=toggles;
+$("add").onclick=()=>{["f_name","f_size","f_id","f_link","f_notes"].forEach(i=>$(i).value="");$("f_img").value="";$("f_brand").value=tab==="SHEIN afiliado"?"SHEIN":"";setColor("Preto");$("cp_list").hidden=true;toggles();$("dlg").showModal()};
+$("cancel").onclick=()=>$("dlg").close();
+
+function toPNG(file,rmBg){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,600/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k);
+ const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.drawImage(im,0,0,w,h);
+ if(rmBg){const d=x.getImageData(0,0,w,h),p=d.data,seen=new Uint8Array(w*h),st=[];const white=i=>p[i*4]>235&&p[i*4+1]>235&&p[i*4+2]>235&&p[i*4+3]>0;
+  for(let i=0;i<w;i++){st.push(i,(h-1)*w+i)}for(let j=0;j<h;j++){st.push(j*w,j*w+w-1)}
+  while(st.length){const i=st.pop();if(seen[i]||!white(i))continue;seen[i]=1;p[i*4+3]=0;const cx=i%w;if(cx>0)st.push(i-1);if(cx<w-1)st.push(i+1);if(i>=w)st.push(i-w);if(i<w*(h-1))st.push(i+w)}
+  x.putImageData(d,0,0)}
+ res(c.toDataURL("image/png"))};im.onerror=rej;im.src=URL.createObjectURL(file)})}
+
+$("save").onclick=async()=>{
+ const f=$("f_img").files[0];if(!f){alert("Anexe a foto da peça.");return}
+ const img=await toPNG(f,$("f_bg").checked);const c=$("f_cat").value;
+ items.unshift({id:"i"+Date.now(),img,cat:c,name:$("f_name").value,size:$("f_size").value,color:selColor,fin:$("f_fin").value,sub:$("w_sub").hidden?"":$("f_sub").value,metal:$("w_metal").hidden?"":$("f_metal").value,style:$("f_style").value,fit:$("f_fit").value,
+  neck:$("w_neck").hidden?"":$("f_neck").value,len:$("w_len").hidden?"":$("f_len").value,brand:$("f_brand").value,shein:$("f_brand").value==="SHEIN",sid:$("f_id").value,link:$("f_link").value,notes:$("f_notes").value});
+ persist();$("dlg").close();render()};
+
+openDB().then(load).then(render);
+</script>
+</body>
+</html>
