@@ -64,13 +64,14 @@ input,select,textarea{width:100%;padding:10px 12px;border-radius:14px;border:1.5
 .cg{font:600 11px Unbounded;padding:8px 12px 4px;color:var(--pink)}
 .cv{position:relative;aspect-ratio:3/4;background:var(--soft);border-radius:28px;overflow:hidden;width:100%}.pc{position:absolute}.cv .pc img{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 4px 6px #0003)}
 .dot{width:18px;height:18px;border-radius:50%;border:1px solid #0003;flex:none;display:inline-block}.card .dot{width:12px;height:12px;vertical-align:middle}
+body.visitor #add,body.visitor [data-use],body.visitor [data-del]{display:none}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">MEU ARMÁRIO</div>
   <nav id="nav"></nav>
-  <button class="btn" id="add">+ Adicionar peça</button>
+  <div class="row"><button class="btn ghost" id="login">Entrar</button><button class="btn" id="add">+ Adicionar peça</button></div>
 </header>
 
 <div class="hero"><div class="orb"></div><h1><span>seu estilo</span></h1></div>
@@ -95,6 +96,15 @@ input,select,textarea{width:100%;padding:10px 12px;border-radius:14px;border:1.5
 
 <section id="guideSec" hidden></section>
 
+<dialog id="dlgLogin">
+  <h2 style="margin:0;font-weight:900">ENTRAR</h2>
+  <p class="hint">Só a dona do armário precisa entrar para cadastrar peças. Quem visita só vê.</p>
+  <label>E-mail</label><input id="lg_mail" type="email" autocomplete="username">
+  <label>Senha</label><input id="lg_pass" type="password" autocomplete="current-password">
+  <p id="lg_msg" class="hint" style="color:#c0392b"></p>
+  <div class="row" style="margin-top:12px"><button class="btn ghost" id="lg_cancel">Cancelar</button><button class="btn" id="lg_ok">Entrar</button></div>
+</dialog>
+
 <dialog id="dlg">
   <h2 style="margin:0;font-weight:900">NOVA PEÇA</h2>
   <label>Foto da peça (vira PNG)</label>
@@ -112,6 +122,7 @@ input,select,textarea{width:100%;padding:10px 12px;border-radius:14px;border:1.5
   <div class="row" style="margin-top:16px"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn" id="save">Salvar</button></div>
 </dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 const CATS=["Blusas","Calças","Saias","Shorts","Jaquetas","Vestidos","Blusão","Sapatos","Acessórios"];
 const STYLES=["Casual","Trabalho","Festa","Esportivo","Chic","Streetwear","Boho","Y2K","Clássico","Minimalista"];
@@ -352,7 +363,89 @@ $("save").onclick=async()=>{
   neck:$("w_neck").hidden?"":$("f_neck").value,len:$("w_len").hidden?"":$("f_len").value,brand:$("f_brand").value,shein:$("f_brand").value==="SHEIN",sid:$("f_id").value,link:$("f_link").value,notes:$("f_notes").value});
  persist();$("dlg").close();render()};
 
-openDB().then(load).then(render);
+/* ===== SUPABASE (armazenamento online) ===== */
+const SUPABASE_URL="https://tjcgbnrvssbbghzroltf.supabase.co",SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqY2dibnJ2c3NiYmdoenJvbHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NzE5NDEsImV4cCI6MjEwODE0Nzk0MX0.djAPzF1XKozC5gWD086EmkeNGuj0xIShsYkh9OLuYK4";
+const ONLINE=SUPABASE_URL.startsWith("https://");
+const sb=ONLINE?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+let owner=false,known=new Set(),knownL=new Set(),q=Promise.resolve();
+const enqueue=f=>{q=q.then(f).catch(e=>alert("Erro ao salvar online: "+(e.message||e)))};
+
+function localPersist(){try{if(db)db.transaction("kv","readwrite").objectStore("kv").put(items,"items")}catch(e){}}
+function localPersistLooks(){try{if(db)db.transaction("kv","readwrite").objectStore("kv").put(looks,"looks")}catch(e){}}
+async function localRead(){await openDB();return new Promise(r=>{const e={items:[],looks:[]};if(!db)return r(e);try{const st=db.transaction("kv").objectStore("kv"),a=st.get("items"),b=st.get("looks");let n=0;const done=()=>{if(++n===2)r({items:a.result||[],looks:b.result||[]})};a.onsuccess=b.onsuccess=done;a.onerror=b.onerror=()=>r(e)}catch(x){r(e)}})}
+
+async function syncItems(){
+ for(const it of items){
+  if(known.has(it.id))continue;
+  let url=it.img;
+  if(url.startsWith("data:")){
+   const blob=await (await fetch(url)).blob();
+   const up=await sb.storage.from("roupas").upload(it.id+".png",blob,{contentType:"image/png",upsert:true});
+   if(up.error)throw up.error;
+   url=sb.storage.from("roupas").getPublicUrl(it.id+".png").data.publicUrl;
+  }
+  const r=await sb.from("pecas").insert({id:it.id,dados:{...it,img:url}});
+  if(r.error)throw r.error;
+  it.img=url;known.add(it.id);
+ }
+ for(const id of [...known]){
+  if(!items.some(i=>i.id===id)){
+   await sb.from("pecas").delete().eq("id",id);
+   await sb.storage.from("roupas").remove([id+".png"]);
+   known.delete(id);
+  }
+ }
+}
+async function syncLooks(){
+ for(const x of looks){if(!knownL.has(x.id)){const r=await sb.from("looks").insert({id:x.id,dados:x});if(r.error)throw r.error;knownL.add(x.id)}}
+ for(const id of [...knownL]){if(!looks.some(x=>x.id===id)){await sb.from("looks").delete().eq("id",id);knownL.delete(id)}}
+}
+function persist(){if(!ONLINE)localPersist();else if(owner)enqueue(syncItems)}
+function persistLooks(){if(!ONLINE)localPersistLooks();else if(owner)enqueue(syncLooks)}
+
+async function load(){
+ if(!ONLINE){const x=await localRead();items=x.items;looks=x.looks;return}
+ const a=await sb.from("pecas").select("id,dados").order("criado_em",{ascending:false});
+ if(a.error){alert("Erro ao carregar as peças: "+a.error.message);return}
+ items=a.data.map(r=>({...r.dados,id:r.id}));known=new Set(items.map(i=>i.id));
+ looks=[];knownL=new Set();
+ if(owner){
+  const b=await sb.from("looks").select("id,dados").order("criado_em",{ascending:false});
+  if(!b.error){looks=b.data.map(r=>r.dados);knownL=new Set(looks.map(x=>x.id))}
+  if(!items.length&&!looks.length){
+   const x=await localRead();
+   if((x.items.length||x.looks.length)&&confirm(`Enviar ${x.items.length} peça(s) e ${x.looks.length} look(s) salvos neste navegador para o Supabase?`)){
+    items=x.items;looks=x.looks;persist();persistLooks();
+   }
+  }
+ }
+}
+
+function renderNav(){
+ const T=ONLINE&&!owner?TABS.filter(t=>t!=="Montar look"):TABS;
+ $("nav").innerHTML=T.map(t=>`<button class="${t===tab?"on":""}" data-t="${t}">${t}</button>`).join("");
+ $("nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;cat="Todas";render()});
+}
+async function refresh(){
+ await load();
+ document.body.classList.toggle("visitor",ONLINE&&!owner);
+ $("login").textContent=owner?"Sair":"Entrar";
+ if(ONLINE&&!owner&&tab==="Montar look")tab="Armário";
+ render();
+}
+$("login").onclick=()=>{if(owner){sb.auth.signOut();return}$("lg_msg").textContent="";$("dlgLogin").showModal()};
+$("lg_cancel").onclick=()=>$("dlgLogin").close();
+$("lg_ok").onclick=async()=>{
+ const r=await sb.auth.signInWithPassword({email:$("lg_mail").value.trim(),password:$("lg_pass").value});
+ if(r.error){$("lg_msg").textContent="Não foi possível entrar: "+r.error.message;return}
+ $("lg_pass").value="";$("dlgLogin").close();
+};
+async function start(){
+ if(!ONLINE){$("login").hidden=true;await refresh();return}
+ const s=await sb.auth.getSession();owner=!!s.data.session;await refresh();
+ sb.auth.onAuthStateChange((e,se)=>{const o=!!se;if(o!==owner){owner=o;setTimeout(refresh,0)}});
+}
+start();
 </script>
 </body>
 </html>
